@@ -25,10 +25,10 @@ usuarios.filter(usuario => usuario.idade >= 18).forEach(usuario => console.log(`
 // Parte 4 — Usuários com o Maior Volume de Compras
 console.log("\n--- Parte 4 — Usuários com o Maior Volume de Compras ---");
 
-const maiorVolumeCompras = Math.max(...usuarios.map(usuario => calcularTotalCompras(usuario.compras)));
-
-usuarios.filter(usuario => calcularTotalCompras(usuario.compras) === maiorVolumeCompras).forEach(usuario => console.log(`${usuario.nome}: Total de Compras R$ ${maiorVolumeCompras}`));
-
+const maiorComprador = usuarios.reduce((maior, usuario) => {
+    return calcularTotalCompras(usuario.compras) > calcularTotalCompras(maior.compras) ? usuario : maior;
+});
+console.log(`Maior comprador: ${maiorComprador.nome}`);
 // Desafio 5 - Coerção de tipos em javascript
 //Analise o seguinte código:
 
@@ -49,3 +49,76 @@ console.log(false === 0);
 // por isso eu prefiro o typescript, pois ele é mais seguro e não permite esse tipo de comportamento inesperado, no desenvolvimento isso 
 // resultaria em erro, impedindo o dev de compilar o código, caso tenha esse tipo de comparação.
 
+// Desafio 6 - Desafio Arrow Function vs Function
+//Observe os dois códigos:
+
+// Código 1
+const pessoa = {
+  nome: "Maria",
+  falar: function(){
+    console.log(this.nome);
+  }
+};
+
+pessoa.falar();
+
+// Código 2
+const pessoa2 = {
+  nome: "Maria",
+  falar: () => {
+    console.log(this.nome);
+  }
+};
+
+pessoa2.falar();
+
+// Resposta: A diferença entre os dois códigos está no comportamento do `this`. 
+// No Código 1, a função `falar` é uma função regular, e o `this` dentro dela 
+// se refere ao objeto `pessoa`, permitindo acessar a propriedade `nome`. Portanto, 
+// ao chamar `pessoa.falar()`, ele imprime "Maria", já no segundo código, a função `falar` 
+// é uma arrow function, e o `this` dentro dela não se refere ao objeto `pessoa2`, 
+// mas sim ao contexto léxico em que a função foi definida, resultando em `undefined` ao tentar 
+// acessar `this.nome`. Portanto, ao chamar `pessoa2.falar()`,
+
+// Desafio 7 --- Desafio Final
+console.log("\n--- Desafio 7: Desafio Final (Gerar relatório) ---");
+const gerarRelatorio = (usuarios) => {
+    const totalUsuarios = usuarios.length;
+    const usuariosAtivos = usuarios.filter(usuario => usuario.ativo).length;
+    const usuariosInativos = totalUsuarios - usuariosAtivos;
+    const mediaIdade = usuarios.reduce((total, usuario) => total + usuario.idade, 0) / totalUsuarios;
+
+    return {
+        totalUsuarios,
+        usuariosAtivos,
+        usuariosInativos,
+        mediaIdade,
+        maiorComprador: maiorComprador.nome // retuliza o código do desafio 4
+    };
+};
+
+console.log(JSON.stringify(gerarRelatorio(usuarios),null, 2));
+
+// Desafio extra 
+// usuario mais jovem, mais velho, valor médio das compras por usuário, no estilo nome:média.
+console.log("\n--- Desafio Extra ---");
+const desafioExtra = (usuarios) => {
+    const usuarioMaisJovem = usuarios.reduce((maisJovem, usuario) => {
+        return usuario.idade < maisJovem.idade ? usuario : maisJovem;
+    });
+    const usuarioMaisVelho = usuarios.reduce((maisVelho, usuario) => {
+        return usuario.idade > maisVelho.idade ? usuario : maisVelho;
+    });
+    const mediaCompras = usuarios.map(usuario => {
+        const totalCompras = calcularTotalCompras(usuario.compras);
+        const media = usuario.compras.length > 0 ? totalCompras / usuario.compras.length : 0;
+        return { nome: usuario.nome, mediaCompras: media };
+    });
+    return {
+        usuarioMaisJovem: usuarioMaisJovem.nome,
+        usuarioMaisVelho: usuarioMaisVelho.nome,
+        mediaCompras
+    };
+};
+
+console.log(JSON.stringify(desafioExtra(usuarios), null, 2));
