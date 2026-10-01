@@ -1,0 +1,77 @@
+# .dockerignore
+# Arquivos/pastas ignorados durante o build do Docker
+
+# Node
+node_modules
+npm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Arquivos temporários
+*.tmp
+*.log
+
+# Arquivos de ambiente local
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+
+# Outros
+.DS_Store
+.idea
+.vscode
+*.swp
+*.swo
+
+# Arquivos de build
+dist
+build
+*.tgz
+
+# Testes (opcional)
+test/
+__tests__/
+*.spec.js
+*.test.js
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos de certificado SSL
+*.pem
+*.key
+
+# Docker
+Dockerfile*
+.dockerignore
+
+# Outros
+README.md
+LICENSE
+CHANGELOG.md
+*.md
+*.txt
+*.rst
+
+# Arquivos gerados pelo projeto
+*.out
+*.pid
+*.log
+
+# Diretórios ocultos
+.venv
+.env
+.pytest_cache
+.coverage
+htmlcov
+.mypy_cache
+.ruff_cache
+.jekyll-cache
+.cache

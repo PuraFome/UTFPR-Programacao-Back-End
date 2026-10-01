@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Backend Node.js + TypeScript (produção)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://root:senha@cockroachdb:26257/utfpr?sslmode=disable"
+    depends_on:
+      - cockroachdb
+    restart: unless-stopped
+
+  # CockroachDB (banco de dados em nuvem local)
+  cockroachdb:
+    image: cockroachdb/cockroachdb:v24.1.0
+    ports:
+      - "26257:26257"
+      - "8080:8080"
+    command: start --insecure --advertise-address=cockroachdb --listen-addr=0.0.0.0
+    volumes:
+      - cockroachdb_data:/var/lib/cockroachdb
+    restart: unless-stopped
+
+  # Inicialização do CockroachDB (cria tabela Users)
+  init-db:
+    image: postgres:16-alpine
+    depends_on:
+      cockroachdb:
+        condition: service_started
+    command: |
+      sh -c '
+        until pg_isready -h cockroachdb -p 26257 -q; do
+          echo "Aguardando CockroachDB..."; sleep 1;
+        done;
+        psql -h cockroachdb -p 26257 -U root -d utfpr -f /scripts/create_table.sql
+      '
+    volumes:
+      - ./scripts:/scripts
+    restart: "no"
+
+volumes:
+  cockroachdb_data:
+    driver: local
